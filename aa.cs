@@ -20,25 +20,21 @@ public class aa : MonoBehaviour
     List<GameObject> emnys2;
     public float minnn;
     GameObject min;
+    List<GameObject> bullets;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        emnys = new List<GameObject>();
-        emnys2 = new List<GameObject>();
+       // emnys = new List<GameObject>();
+        //emnys2 = new List<GameObject>();
 
         tama = Bullet.name.Trim().ToLower();
         //Debug.Log(tama);
         me = transform.root.gameObject.name;
-        //if (me == "player1")
-        //{
-        //   target = GameObject.Find("player2");
-        //}//
-        //if(me == "player2")
-        //{
-        //  target = GameObject.Find("player1");
-        //}
 
-        //if(tama != "bullet") { Debug.Log(33333333); }
+        bullets = new List<GameObject>();
+       
+      
+
         if (tama == "bullet")
         {
             wepon = wepons.bullet;
@@ -55,62 +51,22 @@ public class aa : MonoBehaviour
         {
             wepon = wepons.lazer;
         }
-        //if(wepon == wepons.bullet) { Debug.Log( "11111"); }
-        //if(wepon != wepons.bullet) { Debug.Log("22222"); }
+      
 
     }
 
     // Update is called once per frame
     void Update()
 
-    {
-        GameObject allive1 = GameObject.Find("player1");
-        GameObject allive2 = GameObject.Find("player2");
+    {//emnys = emnys.Where(x  => x != null).ToList();
 
-        //if (emnys.Count < 11)
-        {
-            //  emnys = GameObject.FindGameObjectsWithTag("emny1").ToList();
-        }
-        //if (emnys2.Count < 11)
-        //{
-        //  emnys2 = GameObject.FindGameObjectsWithTag("emny2").ToList();
-        //}
-        //if (me == "player1")
-        //{
-        //  emnys2.Add(allive2);
-        //}
-        //if (me == "player2")
-        //{
-        //    emnys.Add(allive1);
-        //}
-        //if (me == "player2")
-        //{
-        //  foreach (var emny in emnys)
-        {
-            //    float ve = Vector3.Distance(transform.position, emny.transform.position);
-            //  if (ve < minnn)
-            //{
-            //  minnn = ve;
-            //target = emny;
-            //}
-            //}
-            //}
-            //if (me == "player1")
-            //{
-            //  foreach (var emny in emnys2)
-            // {
-            //   float ve = Vector3.Distance(transform.position, emny.transform.position);
-            //     if (ve < minnn)
+        //GameObject allive1 = GameObject.Find("player1");
+        //GameObject allive2 = GameObject.Find("player2");
 
-            // {
-            //   minnn = ve;
-            // target = emny;
-            // }
-
-            //}
-            //}
-            if (target != null)
-            {
+   
+     
+            
+            
                 if (minnn < 25f)
                 {
                     count += 1;
@@ -118,25 +74,37 @@ public class aa : MonoBehaviour
                     {
                         case wepons.bullet:
 
-                            if (count % 15 == 0)
+                            if (count % 90 == 0)
                             {
 
-                                flyy = Instantiate(Bullet, transform.position, quaternion.identity);
-                                fly f = flyy.GetComponent<fly>();
-                                f.wepon = transform.root.gameObject;
-                                f.target = target;
-                                f.minnn = minnn;
-                                transform.LookAt(target.transform);
+                            if (target == null)
+                            {
+                                
+                            }
+
+                          
+                            if (target == null) return; //デバック
+                        flyy = Instantiate(Bullet, transform.position, quaternion.identity);
+                        fly f = flyy.GetComponent<fly>();
+                        f.wepon = transform.root.gameObject;
+                        f.target = target;
+                        f.minnn = minnn;
+                        transform.LookAt(target.transform);
 
                             }
                             break;
                         case wepons.hover:
                             if (count % 750 == 0)
                             {
-                                flyy = Instantiate(Bullet, transform.position, quaternion.identity);
+                            if (target == null)
+                            {
+                               
+                            }
+                            flyy = Instantiate(Bullet, transform.position, quaternion.identity);
                                 fly f = flyy.GetComponent<fly>();
                                 f.wepon = transform.root.gameObject;
                                 f.target = target;
+                        if (target == null) return; 
                                 transform.LookAt(target.transform);
                             }
                             break;
@@ -147,11 +115,14 @@ public class aa : MonoBehaviour
                                 fly f = flyy.GetComponent<fly>();
                                 f.wepon = transform.root.gameObject;
                                 f.target = target;
-                                transform.LookAt(GameObject.Find(target.name).transform);
+                            if (target == null) return; transform.LookAt(target.transform);
+
+                            
                             }
                             break;
+
                     }
-                }
+                
             }
 
 
@@ -166,6 +137,6 @@ public class aa : MonoBehaviour
 
         }
     }
-}
+
     
 

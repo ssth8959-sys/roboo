@@ -12,9 +12,12 @@ public class GETSCORE : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        GameObject.Find("SCORE1").GetComponent<TMP_Text>().text = GameObject.Find("player1").GetComponent<BODY>().score.ToString();
-        GameObject.Find("SCORE2").GetComponent<TMP_Text>().text = GameObject.Find("player2").GetComponent<BODY>().score.ToString();
+    {if (GameObject.Find("player1") != null)
+        {
+            GameObject.Find("SCORE1").GetComponent<TMP_Text>().text = GameObject.Find("player1").GetComponent<BODY>().score.ToString();
+        }
+     if( GameObject.Find("player2") != null) {
+            GameObject.Find("SCORE2").GetComponent<TMP_Text>().text = GameObject.Find("player2").GetComponent<BODY>().score.ToString(); }
 
     }
 }

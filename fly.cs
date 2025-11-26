@@ -52,46 +52,70 @@ public class fly : MonoBehaviour
 
 
         Destroy(gameObject);
-            Debug.Log("ok");
+            
             BODY v = other.GetComponent<BODY>();
         enmy vv = other.GetComponent<enmy>();
-
         
+
+
             //BODY v = other.gameObject.GetComponent<BODY>();
             if (v != null)
         
             {
-                v.damaged(namee);
+                
             if (namee == "hover(Clone)") {
                 //hppopup.GetComponent<>
-                hppopup.text =  GameObject.Find("player1").GetComponent<BODY>().hoverdamage.ToString(); ;
+                hppopup.text =  GameObject.Find("player1").GetComponent<BODY>().hoverdamage.ToString();  
                 Instantiate(hppopup, other.transform.position, quaternion.identity);
-                
-                
-            
+                v.damaged(namee);//
+
+
+
             }
             if(namee == "bullet (Clone)")
             {
                 hppopup.text = GameObject.Find("player1").GetComponent<BODY>().bulletdamage.ToString();
                 Instantiate(hppopup, other.transform.position, quaternion.identity);
+                v.damaged(namee);//
             }
                 //Debug.Log(namee);
             }
         if (vv != null)
         {
-            vv.damagedd(namee);
+            
             if (namee == "hover(Clone)")
             {
-                //hppopup.GetComponent<>
-                hppopup.text = GameObject.Find("emny1(Clone)").GetComponent<enmy>().hoverdamage.ToString(); ;
-                Instantiate(hppopup, other.transform.position, quaternion.identity);
+                if (other.name == "emny2(Clone)")
+                {
+                    hppopup.text = GameObject.Find("emny2(Clone)").GetComponent<enmy>().hoverdamage.ToString(); ;
+                    Instantiate(hppopup, other.transform.position, quaternion.identity);
+                    vv.damagedd(namee);//
+                }
+                if(other.name == "emny1(Clone)")
+                {
+                    hppopup.text = GameObject.Find("emny1(Clone)").GetComponent<enmy>().hoverdamage.ToString(); ;
+                    Instantiate(hppopup, other.transform.position, quaternion.identity);
+                    vv.damagedd(namee);//
+                }
 
 
             }
             if (namee == "bullet (Clone)")
             {
-                hppopup.text = GameObject.Find("player1").GetComponent<BODY>().bulletdamage.ToString();
-                Instantiate(hppopup, other.transform.position, quaternion.identity);
+                if (other.name == "emny2(Clone)")
+                {
+                    hppopup.text = GameObject.Find("emny2(Clone)").GetComponent<enmy>().bulletdamage.ToString();
+                    Instantiate(hppopup, other.transform.position, quaternion.identity);
+                    vv.damagedd(namee);
+                }
+                if (other.name == "emny1(Clone)")
+                {
+                    hppopup.text = GameObject.Find("emny1(Clone)").GetComponent<enmy>().bulletdamage.ToString();
+                    Instantiate(hppopup, other.transform.position, quaternion.identity);
+                    vv.damagedd(namee);
+                }
+
+         
             }
             //Debug.Log(namee);
         }
@@ -136,7 +160,11 @@ public class fly : MonoBehaviour
 
 
 
-
+        if (target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         if (target != null)
         {
@@ -155,25 +183,35 @@ public class fly : MonoBehaviour
         switch (namee)
         {
             case "bullet (Clone)":
+                if (target == null)
+                {
+                    //Destroy(gameObject);
+                }
                 int rate = UnityEngine.Random.Range(0, 10);
                 float rate2  = UnityEngine.Random.Range(0f, 1f);
                 if (rate == 0) 
                 {
                     transform.Translate(0, 1f, 1f);
+                    Destroy(gameObject, 0.5f);
                 }
-                else if(rate < 1) 
+                else if(rate <= 3) 
                 {
                     transform.Translate(0, rate2, rate2);
+                    Destroy(gameObject, 0.5f);
                 }
                 else {
                     transform.Translate(0, 0, 1f);
-                    Destroy(gameObject, 1);
+                    Destroy(gameObject, 0.5f);
                 }
            
                 break;
 
             case "hover(Clone)":
                 count += 1;
+                if (target == null)
+                {
+                    Destroy(gameObject);
+                }
 
 
 

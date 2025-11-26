@@ -48,13 +48,14 @@ public class enmyspon : MonoBehaviour
     
     public  void death(GameObject enmy)
     {
-        
 
-        enmys.Remove(enmy);
+        enmy.GetComponent<enmy>().currentHP = enmy.GetComponent<enmy>().HP;//‰ñ•œ
 
-        GameObject.Find("player1").GetComponent<BODY>().emnyreset();
-        GameObject.Find("player2").GetComponent<BODY>().emnyreset();
-        Destroy(enmy);
+       // enmys.Remove(enmy);
+
+        //GameObject.Find("player1").GetComponent<BODY>().emnyreset();
+        //GameObject.Find("player2").GetComponent<BODY>().emnyreset();
+        enmy.SetActive(false);
 
 
 

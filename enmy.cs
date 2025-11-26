@@ -8,6 +8,7 @@ public class enmy : MonoBehaviour
     public int HP;
     public int currentHP;
     public GameObject emny;
+    Component emnyy;
     public int bulletdamage = 1;
     public int hoverdamage = 8;
     string me;
@@ -15,9 +16,10 @@ public class enmy : MonoBehaviour
     List <float> emnydis;
     GameObject minn;
     float min = 9999;
-    GameObject playeremny;
-    List<GameObject> allemny;
     int count;
+    public GameObject playeremny;
+    List<GameObject> allemny;
+    bool o = true;
     float dis;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,6 +34,7 @@ public class enmy : MonoBehaviour
         if (me == "emny1(Clone)")
         {
             emny = GameObject.Find("emny2(Clone)");
+            enmy emnyy = emny.GetComponent<enmy>();  
             playeremny = GameObject.Find("player2");
             emnys = GameObject.FindGameObjectsWithTag("emny2").ToList();
             foreach (GameObject e in emnys)
@@ -58,24 +61,40 @@ public class enmy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        allemny = allemny.Where(x => x != null).ToList();
+
         count++;
-            if (count % 100 == 0) {
+        if (count % 100 == 0)
+        {
+            min = 9999;
+            minn = null;
             dis = Vector3.Distance(transform.position, playeremny.transform.position);
             foreach (var i in allemny)
             {
                 if (i != null)
                 {
-                    float diss = Vector3.Distance(transform.position, i.transform.position);
-                    //emnydis.Add(diss);
-                    if (diss < min)
+                    if (i.activeInHierarchy == true)
                     {
-                        min = diss;
-                        minn = i;
+                        float diss = Vector3.Distance(transform.position, i.transform.position);
+                        //emnydis.Add(diss);
+                        if (diss < min)
+                        {
+                            min = diss;
+                            minn = i;
+
+                        }
                     }
                 }
 
 
-            } }
+            }
+        }
+        if (minn != null)
+        {
+            gameObject.GetComponentInChildren<emnyattackk>().target = minn;
+            gameObject.GetComponentInChildren<emnyattackk>().dis = min;
+
+        }
 
 
         if (minn != null)
@@ -83,17 +102,19 @@ public class enmy : MonoBehaviour
             //Debug.Log(emnydis.Max() + "and" + emnydis.Min() + dis);
             //if(emny.name == "player2")
             //{
-              //  Debug.Log("the emny is player1");
+            //  Debug.Log("the emny is player1");
             //}
-            if (dis > min && min > 3f)
+            if (dis > min && min > 1f) //|| dis == min && min > 1f)
             {
-                
+
                 transform.LookAt(minn.transform);
                 Vector3 vecc = minn.transform.position - transform.position;
                 transform.position += vecc.normalized * 1.3f * Time.deltaTime;
 
+
+
             }
-            else if (dis < min && dis > 7f)
+            else if (dis < min && dis > 1f || dis == min && min > 1f)
             {
 
                 transform.LookAt(playeremny.transform);
@@ -102,33 +123,52 @@ public class enmy : MonoBehaviour
 
             }
         }
+
+
         
+            if (currentHP <= 0)
+            {
+
+                GameObject.Find("enmyspon").GetComponent<enmyspon>().death(this.gameObject);
+                if (this.gameObject.name == "emny1(Clone)")
+                {
+                    if (GameObject.Find("player2").GetComponent<BODY>() != null)
+                    {
+                        GameObject.Find("player2").GetComponent<BODY>().getscore(this.gameObject);
+                    }
+                }
+                if (this.gameObject.name == "emny2(Clone)")
+                {
+                    if (GameObject.Find("player1").GetComponent<BODY>() != null)
+                    {
+                        GameObject.Find("player2").GetComponent<BODY>().getscore(this.gameObject);
+                    }
+
+
+                }
 
 
 
-        if (currentHP <= 0)
+            }
+
+            if(gameObject.activeInHierarchy == false)
         {
-
-            GameObject.Find("enmyspon").GetComponent<enmyspon>().death(this.gameObject);
-            if(this.gameObject.name == "emny1(Clone)")
+            int a = 0;
+            a++;
+            if(a % 1000 == 0)
             {
-                GameObject.Find ("player2").GetComponent<BODY>().getscore(this.gameObject);  
+                if(this.gameObject.name == "emny1(Clone)")
+                {
+                    transform.position = GameObject.Find("tower1").transform.position + new Vector3(0, 0, 3);
+                }
             }
-            if(this.gameObject.name == "emny2(Clone)")
-            {
-                GameObject.Find("player1").GetComponent<BODY>().getscore(this.gameObject);
-
-            }
-
-            
-
         }
-        
 
+        
     }
     public void damagedd(string n)
     {
-        Debug.Log(n);
+        
         if (n == "bullet (Clone)")
         {
             currentHP -= bulletdamage;
@@ -138,8 +178,12 @@ public class enmy : MonoBehaviour
         {
             currentHP -= hoverdamage;
         }
+        else if(n == "emnyattack")
         {
-
+            currentHP -= 1;
+        }
+        {
+           
         }
     }
 }
