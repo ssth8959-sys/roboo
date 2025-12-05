@@ -2,10 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
+using UnityEngine.UIElements;
+using static Unity.Burst.Intrinsics.Arm;
 
 
 public class BODY : MonoBehaviour
@@ -22,8 +27,8 @@ public class BODY : MonoBehaviour
     public int hoverdamage = 8;
     int level;
     int sucore;
-    bool a, b, c ,d ,e= false;
-    List<GameObject> emnys;
+    bool a = false, b = false, c = false;
+    public List<GameObject> emnys;
     List<float> emnydis;
     float min = 9999;
     GameObject minn;
@@ -32,79 +37,123 @@ public class BODY : MonoBehaviour
     List<GameObject> wepons;
     public TMP_Text hppopup;
     int count = 0;
-    int deathcount = 0;
-    List<int> number;
-    List<int> random;
+    List<GameObject> childwepon;
+    List<bool> skills;
+    public List<GameObject> towers;
     List<int> tower;
-  
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() 
+    List<bool> active;
+    bool a1 = true, a2 = true, a3 = true;
+    bool aa = false, bb = false, cc = false;
+    bool heal = false, teleport = false, avoid = false, ADDwepon1 = false, ADDwepon2 = false, ADDwepon3 = false;
+    int r;
+    List<int> skillset;
+    public List<string> skillsname;
+    public List<string> sskills;
+    public GameObject healeffect;
+    public GameObject avoideffect;
+    public GameObject misseffact;
+    public GameObject teleporteffact;
+    Vector3 positionn;
+    bool keya = true, keyb = true, keyc = true, keyaa = true, keybb = true, keycc = true;
+    List<int> skillnumbers;
+    // Start is called once before th;e first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        MaxHP = 1000;
+
+
+        MaxHP = 800;
         currentHP = MaxHP;
 
         body = this.gameObject.name;
-
+        skills = new List<bool>() { a, b, c, aa, bb, cc };
         emnys = new List<GameObject>();
         emnydis = new List<float>();
         wepons = new List<GameObject>();
-        weponsname = new List<string>() { "wepon1", "wepon2"};
-        number = new List<int>() { 1, 2, 3, 4 };
-        random = new List<int>() {1, 2, 3, 4 };
-        tower = new List<int>();
-        Debug.Log(body);
-        //foreach (int i in number)
-        //{
-          //  int c = 3;
-            //int r = UnityEngine.Random.Range(0, c);
-            //int rr = random[r];
+        active = new List<bool>() { a1, a2, a3 };
+        weponsname = new List<string>() { "wepon1", "wepon2", "randomwepon1", "randomwepon2", "randomwepon3" };
+        childwepon = new List<GameObject>();
+        skillset = new List<int>();
+        sskills = new List<string>();
+        skillsname = new List<string>() { "heal", "teleport", "avoid", "ADDwepon1", "ADDwepon2", "ADDwepon3" };
 
-           // tower[random[rr]] = i;
-            //random.Remove(random[r]);
-            //Debug.Log(random.Count);
-            //c -= 1;
 
-        //}
+        skillnumbers = new List<int>() { 0, 1, 2, 3, 4, 5 };
 
 
 
 
+
+
+
+
+        foreach (Transform child in this.transform)
+        {
+            childwepon.Add(child.gameObject);
+            //Debug.Log("Child name: " + child.name);
+        }
 
 
         if (body == "player1")
         {
-           
+
             enmy = GameObject.Find("player2");
-            
 
 
-            emnys = GameObject.FindGameObjectsWithTag("emny1").ToList();
+
+            emnys = GameObject.FindGameObjectsWithTag("emny2").ToList();
+
+            Debug.Log(emnys.Count + "emnys");
             emnys.Add(enmy);
 
         }
         if (body == "player2")
         {
             enmy = GameObject.Find("player1");
-            emnys = GameObject.FindGameObjectsWithTag("emny2").ToList();
+            emnys = GameObject.FindGameObjectsWithTag("emny1").ToList();
+
+            Debug.Log(emnys.Count + "emnys");
             emnys.Add(enmy);
 
 
 
         }
-        
-   
+
+        foreach (Transform child in this.transform)
+        {
+            childwepon.Add(child.gameObject);
+        }
 
 
         foreach (string obj in weponsname)
         {
-            
-            
-                wepons.Add(transform.Find(obj).gameObject);
-        
+
+
+            wepons.Add(transform.Find(obj).gameObject);
+
 
         }
-        Debug.Log(wepons[0].name);
-        Debug.Log(wepons[1].name);
+        if (body == "player1")
+        {
+
+            enmy = GameObject.Find("player2");
+
+
+
+            //emnys = GameObject.FindGameObjectsWithTag("emny2").ToList();
+
+
+
+        }
+
+
+        tower = new List<int>() { 0, 1, 2, 3 };
+        for (int i = tower.Count - 1; i > 0; i--)
+        {
+            int r = UnityEngine.Random.Range(0, i + 1);
+            int rr = tower[i];
+            tower[i] = tower[r];
+            tower[r] = rr;
+        }
     }
 
 
@@ -115,15 +164,22 @@ public class BODY : MonoBehaviour
     void Update()
     {
 
+        addwepon();
+        skill();
 
-
-       
         emnys = emnys.Where(x => x != null).ToList();
-        if (!emnys.Contains(enmy))
+        //if (!enmy.activeInHierarchy)
+        //{
+        //  if(emnys.Contains(enmy))
+        //emnys.Remove(enmy);
+
+        //}
+        if (enmy.activeInHierarchy && !emnys.Contains(enmy))
         {
-            emnys.Add (enmy);
-        
+            emnys.Add(enmy);
+
         }
+
 
         count++;
 
@@ -137,7 +193,7 @@ public class BODY : MonoBehaviour
             minn = null;
             foreach (GameObject i in emnys)
             {
-                if (i != null) 
+                if (i != null)
                 {
                     if (i.activeInHierarchy == true)
                     {
@@ -150,59 +206,135 @@ public class BODY : MonoBehaviour
                         }
                     }
                 }
-                
-                
+
+
             }
 
 
             if (minn == null) return;
-            
+
 
 
             foreach (GameObject i in wepons)
             {
-               
+
                 if (minn == null) break;
-              
-                
-                    
-                i.GetComponent<aa>().target = minn;
-                i.GetComponent<aa>().minnn = min;
+                if (i != null)
+                {
 
+
+                    i.GetComponent<aa>().target = minn;
+                    i.GetComponent<aa>().minnn = min;
+                }
 
             }
-            }
-     
-        
-
-            if (enmy != null)
+        }
+        foreach (string i in sskills)
         {
-            // Debug.Log(emnydis.Max() + "and" + emnydis.Min() + dis);
+            Debug.Log(i);
+        }
+
+
+        if (enmy != null)
+        {
+            // Debug.Log(emnydis.Max() + "and" + emnydis.Min() + dis);tr
 
             if (minn != null)
             {
                 if (minn.activeInHierarchy == true)
                 {
-                    if (!enmy.activeInHierarchy && emnys.Count < 15)
+                    if (!enmy.activeInHierarchy)
                     {
+                        if (towers[tower[0]].activeInHierarchy)
+                        {
+                            if (towers[tower[0]] != null )
+                            {
 
-                        //transform.LookAt("")
-                        Vector3 vec = minn.transform.position - transform.position;
-                        transform.position += vec.normalized * 1.5f * Time.deltaTime;
+                              //  for (int i = 0; i == childwepon.Count - 1; i++)
+                                //{
+                                  //  childwepon[i].GetComponent<aa>().t = true;
+
+//                                }
+   foreach (GameObject i in wepons)
+                                {
+                                    if (i != null)
+                                    {
+                                        i.GetComponent<aa>().target = towers[tower[0]];
+                                    }
+
+
+                                }
+                                transform.LookAt(towers[tower[0]].transform);
+                                Vector3 vec = towers[tower[0]].transform.position - transform.position;
+                                transform.position += vec.normalized * 1.5f * Time.deltaTime;
+
+                            }
+
+
+                        }
+                        else if (towers[tower[1]].activeInHierarchy)
+                        {
+                            transform.LookAt(towers[tower[1]].transform);
+                            Vector3 vec = towers[tower[1]].transform.position - transform.position;
+                            transform.position += vec.normalized * 1.5f * Time.deltaTime;
+                            foreach (GameObject i in wepons)
+                            {
+                                if (i != null)
+                                    {
+                                    i.GetComponent<aa>().target = towers[tower[1]];
+                                }
+
+
+                            }
+
+                        }
+                        else if (towers[tower[2]].activeInHierarchy)
+                        {
+                            transform.LookAt(towers[tower[2]].transform);
+                            Vector3 vec = towers[tower[2]].transform.position - transform.position;
+                            transform.position += vec.normalized * 1.5f * Time.deltaTime;
+                            foreach (GameObject i in wepons)
+                            {
+                                if (i != null)
+                                {
+                                    i.GetComponent<aa>().target = towers[tower[2]];
+                                }
+
+
+                            }
+                        }
+                        else if (towers[tower[3]].activeInHierarchy)
+                        {
+                            transform.LookAt(towers[tower[3]].transform);
+                            Vector3 vec = towers[tower[3]].transform.position - transform.position;
+                            transform.position += vec.normalized * 1.5f * Time.deltaTime;
+                            foreach (GameObject i in wepons)
+                            {
+                                if (i != null)
+                                {
+                                    i.GetComponent<aa>().target = towers[tower[3]];
+                                }
+
+
+                            }
+
+                        }
+
 
 
                     }
                     else if (dis > min && min > 15f)//|| dis == min && min > 3f)
                     {
+                        if (!enmy.activeInHierarchy) return; 
                         //Debug.Log("sceceeeeeeeee");
                         transform.LookAt(minn.transform);
                         Vector3 vec = minn.transform.position - transform.position;
                         transform.position += vec.normalized * 0.9f * Time.deltaTime;
 
                     }
-                    else if (dis < min && dis > 15f || dis == min && min > 3f)
+                    else if (dis < min && dis > 15f || dis == min && min > 15f)
                     {
-
+                        if (!enmy.activeInHierarchy) return;
                         transform.LookAt(enmy.transform);
                         Vector3 vec = enmy.transform.position - transform.position;
                         transform.position += vec.normalized * 0.9f * Time.deltaTime;
@@ -210,121 +342,199 @@ public class BODY : MonoBehaviour
                     }
                 }
             }
-        }
-        
-        //プレイヤー死亡処理
-        if (currentHP <= 0)
-        {
-            gameObject.SetActive(false);
-            deathcount++;
-                if (deathcount % 800 == 0) {
-                currentHP = MaxHP;
-                gameObject.SetActive(true);
+
+
+
+
+
+
+
+
+
+            //プレイヤー死亡処理
+            if (currentHP <= 0)
+            {
+                if (this.gameObject.name == "player1")
+                {
+                    GameObject.Find("life").GetComponent<life>().g = this.gameObject;
+                    GameObject.Find("life").GetComponent<life>().c = true;
                 }
+                if (this.gameObject.name == "player2")
+                {
+                    GameObject.Find("life").GetComponent<life>().g = this.gameObject;
+                    GameObject.Find("life").GetComponent<life>().c = true;
+                }
+
+            }
+
+
+            //パッシフ系スキル処理
+            if (score >= 8 && a1)
+            {
+                int a = UnityEngine.Random.Range(0, skillsname.Count - 1);
+                getskill(skillnumbers[a]);
+            
+                sskills.Add(skillsname[a]);
+                skillsname.Remove(skillsname[a]);
+                skillnumbers.Remove(skillnumbers[a]);
+
+
+                a1 = false;
+            }
+            if (score >= 15 && a2)
+            {
+                // int a = UnityEngine.Random.Range(0, skills.Count - 2);
+
+                getskill(4);
+                sskills.Add(skillsname[4]);
+                skillsname.Remove(skillsname[4]);
+                a2 = false;
+            }
+            if (score > 25 && a3)
+            {
+                int a = UnityEngine.Random.Range(0, skillsname.Count -1);
+                getskill(skillnumbers[a]);
+                sskills.Add(skillsname[a]);
+                skillsname.Remove(skillsname[a]);
+                skillnumbers.Remove(skillnumbers[a]);
+                a3 = false;
+            }
         }
-        //パッシフ系スキル処理
-        skill(a, b, c);
     }
+
+
     //ダメージ関連処理
     public void damaged(string n)
     {
-        
-        if (n == "bullet (Clone)")
+        if (n == "emnyattack")
         {
-            if (d)
+            currentHP -= 1;
+        }
+
+        else if (n == "bullet (Clone)")
+        {
+            int a = UnityEngine.Random.Range(0, 9);
+            if (a < 2)
             {
-                hppopup.text = "MISS" ;
-                Instantiate(hppopup, transform.position, quaternion.identity);
-                transform.position += new Vector3(0, 0, 3); 
+                if (c)
+                {
+                    GameObject effact;
+                    //hppopup.GetComponent<TMP_Text>().text = "MISS";
+                    //Instantiate(hppopup, transform.position, quaternion.identity);
+                    effact = Instantiate(misseffact, transform.position, quaternion.identity);
+                    Destroy(effact, 3f);
+                }
             }
-            currentHP -= bulletdamage;
-          
+            else
+            {
+                currentHP -= bulletdamage;
+            }
+
             //Debug.Log(currentHP);
+
         }
         else if (n == "hover(Clone)")
         {
-            if (d)
+            int a = UnityEngine.Random.Range(0, 9);
+            if (a < 2)
             {
-                hppopup.text = "MISS";
-                Instantiate(hppopup, transform.position, quaternion.identity);
-                transform.position += new Vector3(0, 0, 3);
+                if (c)
+                {
+                    GameObject effact;
+                    //hppopup.GetComponent<TMP_Text>().text = "MISS";
+                    //Instantiate(hppopup, transform.position, quaternion.identity);
+                    effact = Instantiate(misseffact, transform.position, quaternion.identity);
+                    Destroy(effact, 0.3f);
+
+                }
             }
             else
             {
                 currentHP -= hoverdamage;
             }
-                
-        }
-
-
-
-        skill(a, b, c);
-    }
-
-
-    public void attack(GameObject bullet)
-    {
-
-
-        Instantiate(bullet, transform.position, quaternion.identity);
-    }
-    IEnumerator heal()
-    {
-        while (currentHP != MaxHP)
-        {
-            int r = UnityEngine.Random.Range(0, 10);
-            if (r <= 1)
-            {
-                currentHP = +20;
-                if (currentHP > MaxHP)
-                {
-                    currentHP = MaxHP;
-                }
-                //animation
-            }
-            yield return new WaitForSeconds(1f);
-
-
 
         }
+
+
     }
+
+
+    //    public void attack(GameObject bullet)
+    //   {
+
+
+    //     Instantiate(bullet, transform.position, quaternion.identity);
+    //}
+
     //以下、ガチャボーナス
-    void skill(bool a, bool b, bool c)
+    void skill()
     {
         if (a == true)
-        {
-            if (count % 1500 == 0)
-            {
-                gameObject.GetComponent<BODY>().currentHP += 15;
-            }
-        }
-        if (b == true)
-        {
-            if (count % 1500 == 0)
-            {
-                gameObject.GetComponent<BODY>().currentHP += 15;
-            }
 
-        }
-        if (c == true)
         {
-            ;
-        } }
+            if (enmy.activeInHierarchy)
+            {
+                if (count % 5000 == 0)
+                {
+                    currentHP += 10;
+                    Debug.Log("+20!!");
+                    if (currentHP > MaxHP)
+                    {
+                        GameObject effact;
+                        currentHP = MaxHP;
+                        effact = Instantiate(healeffect, transform.position, quaternion.identity);
+                        Destroy(effact, 2f);
+                    }
+                }
+            }
+        }
+        if (min < 15f && b == true)
+        {
+            Debug.Log("!!");
+
+            if (b == true)
+            {
+                if (count % 5000 == 0)
+                {
+                    GameObject effact;
+                    positionn = transform.position;
+                    effact = Instantiate(teleporteffact, transform.position, quaternion.identity);
+                    Destroy(effact, 2);
+                    transform.position = enmy.transform.position + new UnityEngine.Vector3(0, 0, -5f);
+                    effact = Instantiate(teleporteffact, transform.position, quaternion.identity);
+                    Destroy(effact, 2);
+                    transform.GetComponent<Collider>().enabled = false;
+                    Invoke("returnposition", 2f);
+
+
+
+                }
+            }
+        }
+
+    }
     public void addwepon()
     {
-        if (!GameObject.Find("rendomwepon1").activeInHierarchy)
+
+        if (aa && !transform.Find("randomwepon1").gameObject.activeInHierarchy)
         {
-            GameObject.Find("rendomwepon1").SetActive(true);
+
+            transform.Find("randomwepon1").gameObject.SetActive(true);
+
+
+            aa = false;
 
         }
-        else if (!GameObject.Find("rendomwepon2").activeInHierarchy)
+        if (bb)
         {
-            GameObject.Find("rendomwepon2").SetActive(true);
+            transform.Find("randomwepon2").gameObject.SetActive(true);
+            bb = false;
 
         }
-        else 
+        if (cc)
         {
-            GameObject.Find("rendomwepon3").SetActive(true);
+            transform.Find("randomwepon3").gameObject.SetActive(true);
+            cc = false;
 
 
         }
@@ -338,16 +548,16 @@ public class BODY : MonoBehaviour
 
         if (body == "player2")
         {
-       
 
-            emnys = GameObject.FindGameObjectsWithTag("emny2").ToList();
+
+            emnys = GameObject.FindGameObjectsWithTag("emny1").ToList();
 
 
         }
         if (body == "player1")
         {
 
-            emnys = GameObject.FindGameObjectsWithTag("emny1").ToList();
+            emnys = GameObject.FindGameObjectsWithTag("emny2").ToList();
         }
     }
     public void addemny(GameObject n)
@@ -359,7 +569,52 @@ public class BODY : MonoBehaviour
     {
         score++;
     }
+    void getskill(int index)
+    {
+
+        switch (index)
+        {
+            case 0: a = true; keya = false; break;
+            case 1: b = true; keyb = false; break;
+            case 2: c = true; keyc = false; break;
+            case 3: aa = true; keyaa = false; break;
+            case 4: bb = true; keybb = false; break;
+            case 5: cc = true; keycc = false; break;
+
+        }
+    }
+    void returnposition()
+    {
+        transform.position = positionn;
+        transform.GetComponent<Collider>().enabled = true;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 2780842732991473861}
   - component: {fileID: 8176261469596286273}
   - component: {fileID: 857599679909847541}
+  - component: {fileID: 6371627178330733752}
   m_Layer: 0
   m_Name: tower1
   m_TagString: tower1
@@ -237,6 +238,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::towerhp
   canvas: {fileID: 4865679452206651918, guid: 7513ba90c4d33a44bb90705f422230df, type: 3}
+  currenthp: 0
   bulletdamage: 1
   hoverdamage: 8
   towerhpbar: {fileID: 3854899350299231998, guid: eff8ca2d99200ff41a65d7b5cdc0f91d, type: 3}
+--- !u!54 &6371627178330733752
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5867479258841936584}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0

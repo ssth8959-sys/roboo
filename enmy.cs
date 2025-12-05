@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class enmy : MonoBehaviour
@@ -13,13 +15,15 @@ public class enmy : MonoBehaviour
     public int hoverdamage = 8;
     string me;
     List<GameObject> emnys;
-    List <float> emnydis;
+    List<float> emnydis;
     GameObject minn;
     float min = 9999;
     int count;
+    int countt;
     public GameObject playeremny;
     List<GameObject> allemny;
-    bool o = true;
+    public TMP_Text hppopup;
+
     float dis;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,7 +38,7 @@ public class enmy : MonoBehaviour
         if (me == "emny1(Clone)")
         {
             emny = GameObject.Find("emny2(Clone)");
-            enmy emnyy = emny.GetComponent<enmy>();  
+            enmy emnyy = emny.GetComponent<enmy>();
             playeremny = GameObject.Find("player2");
             emnys = GameObject.FindGameObjectsWithTag("emny2").ToList();
             foreach (GameObject e in emnys)
@@ -42,7 +46,7 @@ public class enmy : MonoBehaviour
                 allemny.Add(e);
             }
             allemny.Add(playeremny);
-                
+
         }
         if (me == "emny2(Clone)")
         {
@@ -88,6 +92,7 @@ public class enmy : MonoBehaviour
 
 
             }
+
         }
         if (minn != null)
         {
@@ -104,13 +109,19 @@ public class enmy : MonoBehaviour
             //{
             //  Debug.Log("the emny is player1");
             //}
-            if (dis > min && min > 1f) //|| dis == min && min > 1f)
+            if (min > 1f) //|| dis == min && min > 1f)
             {
 
                 transform.LookAt(minn.transform);
                 Vector3 vecc = minn.transform.position - transform.position;
                 transform.position += vecc.normalized * 1.3f * Time.deltaTime;
+                //if (dis < 2f && minn == playeremny)
+                //{
+                //  hppopup.text = "1";
+                //Instantiate(hppopup, playeremny.transform.position, quaternion.identity);
+                //minn.GetComponent<enmy>().damagedd("emnyattack");
 
+                //}
 
 
             }
@@ -120,70 +131,126 @@ public class enmy : MonoBehaviour
                 transform.LookAt(playeremny.transform);
                 Vector3 vecc = playeremny.transform.position - transform.position;
                 transform.position += vecc.normalized * 1.3f * Time.deltaTime;
-
+                //  if(dis < 2f)
+                ///{
+                // hppopup.text = "1" ;
+                //Instantiate(hppopup, playeremny.transform.position, quaternion.identity);
+                // playeremny.GetComponent<BODY>().damaged("emnyattack");
+                //}
             }
         }
 
 
-        
-            if (currentHP <= 0)
-            {
 
-                GameObject.Find("enmyspon").GetComponent<enmyspon>().death(this.gameObject);
-                if (this.gameObject.name == "emny1(Clone)")
-                {
-                    if (GameObject.Find("player2").GetComponent<BODY>() != null)
-                    {
-                        GameObject.Find("player2").GetComponent<BODY>().getscore(this.gameObject);
-                    }
-                }
-                if (this.gameObject.name == "emny2(Clone)")
-                {
-                    if (GameObject.Find("player1").GetComponent<BODY>() != null)
-                    {
-                        GameObject.Find("player2").GetComponent<BODY>().getscore(this.gameObject);
-                    }
-
-
-                }
+        //  if (currentHP <= 0)
+        // {
 
 
 
-            }
 
-            if(gameObject.activeInHierarchy == false)
+        //if (this.gameObject.name == "emny1(Clone)")
+        //{
+        //      if (GameObject.Find("player2").GetComponent<BODY>() != null)
+        //  {
+        //if (f) {
+        //  GameObject.Find("player2").GetComponent<BODY>().getscore(this.gameObject);
+        //}
+        //}
+
+        //                }
+        //              if (this.gameObject.name == "emny2(Clone)")
+        //            {
+        //              if (GameObject.Find("player1").GetComponent<BODY>() != null)
+        //            {
+        //              GameObject.Find("player1").GetComponent<BODY>().getscore(this.gameObject);
+        //        }
+
+
+        //  }
+
+
+
+        //}
+
+        if (gameObject.activeInHierarchy == false)
         {
-            int a = 0;
-            a++;
-            if(a % 1000 == 0)
-            {
-                if(this.gameObject.name == "emny1(Clone)")
-                {
-                    transform.position = GameObject.Find("tower1").transform.position + new Vector3(0, 0, 3);
-                }
-            }
+
+            //  a++;
+            //if(a % 1000 == 0)
+            //{
+            //  if(this.gameObject.name == "emny1(Clone)")
+            //{
+            //  transform.position = GameObject.Find("tower1").transform.position + new Vector3(0, 0, 3);
+            //}
+            //}
         }
 
-        
+
     }
     public void damagedd(string n)
     {
-        
         if (n == "bullet (Clone)")
         {
             currentHP -= bulletdamage;
-            //Debug.Log(currentHP);
+
+            if (currentHP <= 0)
+            {
+                if (this.gameObject.name == "emny2(Clone)")
+                {
+                    if (GameObject.Find("player1")?.GetComponent<BODY>() != null)
+                    {
+                        GameObject.Find("player1").GetComponent<BODY>().getscore(this.gameObject);
+                                    GameObject.Find("enmyspon").GetComponent<enmyspon>().deathdata(this.gameObject, true);
+                        ;
+                    }
+                }
+                else if (this.gameObject.name == "emny1(Clone)")  
+                {
+                    if (GameObject.Find("player2")?.GetComponent<BODY>() != null)
+                    {
+                        GameObject.Find("player2").GetComponent<BODY>().getscore(this.gameObject);
+                        GameObject.Find("enmyspon").GetComponent<enmyspon>().deathdata(this.gameObject, true);
+
+
+                    }
+                }
+            }
         }
         else if (n == "hover(Clone)")
         {
             currentHP -= hoverdamage;
+
+            if (currentHP <= 0)
+            {
+                if (this.gameObject.name == "emny2(Clone)")
+                {
+                    if (GameObject.Find("player1")?.GetComponent<BODY>() != null)
+                    {
+                        GameObject.Find("player1").GetComponent<BODY>().getscore(this.gameObject);
+                        GameObject.Find("enmyspon").GetComponent<enmyspon>().deathdata(this.gameObject, true);
+
+                    }
+                }
+                else if (this.gameObject.name == "emny1(Clone)")  
+                {
+                    if (GameObject.Find("player2")?.GetComponent<BODY>() != null)
+                    {
+                        GameObject.Find("player2").GetComponent<BODY>().getscore(this.gameObject);
+                        GameObject.Find("enmyspon").GetComponent<enmyspon>().deathdata(this.gameObject, true);
+
+                    }
+                }
+            }
         }
-        else if(n == "emnyattack")
+        else if (n == "emnyattack")
         {
             currentHP -= 1;
-        }
-        {
-           
+            GameObject.Find("enmyspon").GetComponent<enmyspon>().deathdata(this.gameObject, true);
+            GameObject.Find("enmyspon").GetComponent<enmyspon>().deathdata(this.gameObject, true);
+
         }
     }
 }
+
+
+
